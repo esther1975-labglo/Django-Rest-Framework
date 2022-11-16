@@ -4,8 +4,8 @@ from rest_framework import status
 from django.contrib.auth.models import User, Group
 from rest_framework import viewsets
 from rest_framework import views
-from todo_api.models import Todos, Snippets, Product
-from todo_api.serializers import SnippetSerializer, HyperSnippetSerializer, ProductSerializer, TodoSerializer, UserSerializer, Hyper_UserSerializer, GroupSerializer, LoginSerializer
+from todo_api.models import *
+from todo_api.serializers import *
 from rest_framework import mixins
 from rest_framework import generics
 from pygments.lexers import get_lexer_by_name
@@ -32,6 +32,9 @@ from .serializers import UserSerializer, RegisterSerializer
 from rest_framework.authentication import TokenAuthentication
 from todo_api.permissions import IsOwnerOrReadOnly
 from rest_framework.decorators import action
+from rest_framework.pagination import PageNumberPagination
+from django_filters.rest_framework import DjangoFilterBackend
+from rest_framework import filters
 
 
 '''Register'''
@@ -84,7 +87,13 @@ class UserViewSet(viewsets.ModelViewSet):
     queryset = User.objects.all().order_by('-date_joined')
     serializer_class = UserSerializer
     permission_classes = [permissions.IsAuthenticated]
-   
+
+class UserListView(generics.ListAPIView):
+    queryset = User.objects.all()
+    serializer_class = UserSerializer
+    filter_backends = [DjangoFilterBackend]
+    search_fields = ['username', 'email']
+
 class Hyper_UserViewSet(viewsets.ModelViewSet):
     queryset = User.objects.all().order_by('-date_joined')
     serializer_class = Hyper_UserSerializer
@@ -111,6 +120,7 @@ class ExampleView(APIView):
 
 class TodoListApiView(APIView):
     permission_classes = [permissions.IsAuthenticated]
+
     def get(self, request, *args, **kwargs):
         todos = Todos.objects.filter(user = request.user.id)
         serializer = TodoSerializer(todos, many=True)
@@ -185,6 +195,17 @@ class TodoDetailApiView(APIView):
             status=status.HTTP_200_OK
         )
 
+class filter_todoList(generics.ListAPIView):
+    serializer_class = TodoSerializer
+
+    def get_queryset(self):
+    
+        queryset = Todos.objects.all()
+        task = self.request.query_params.get('task')
+        if task is not None:
+            queryset = queryset.filter(todos__task = task)
+        return queryset
+
 
 @api_view(['GET', 'POST'])
 def snippet_list(request):
@@ -250,7 +271,7 @@ class SnippetList(mixins.ListModelMixin,
     def delete(self, request, *args, **kwargs):
         return self.destroy(request, *args, **kwargs)
 
-print("***********************************************************************************************************")
+print("**********************************************DOUBT*************************************************************")
 ''' HyperlinkedModelSerializer '''
 class Hyper_SnippetViewSet(viewsets.ModelViewSet):
     queryset = Snippets.objects.all()
@@ -264,12 +285,15 @@ def Hyper_Snippet_list(request):
     print('oooooooooooooooooooooooooooooooooooo', request)
     print(serializer.data)
     return Response(serializer.data)
-print("***********************************************************************************************************")
+print("**********************************************DOUBT*************************************************************")
 
 class SnippetList(generics.ListCreateAPIView):
     queryset = Snippets.objects.all()
     serializer_class = SnippetSerializer
-
+    filter_backends = [DjangoFilterBackend]
+    filterset_fields = ['code', 'title']
+    filter_backends = [filters.SearchFilter]
+    search_fields = ['code', 'title']
 
 class SnippetHighlight(generics.GenericAPIView):
     queryset = Snippets.objects.all()
@@ -371,6 +395,14 @@ class ProductDetailApiView(APIView):
             {"res": "Object deleted!"},
             status=status.HTTP_200_OK
         )
+
+class ProductList(generics.ListAPIView):
+    queryset = Product.objects.all()
+    serializer_class = ProductSerializer
+    filter_backends = [DjangoFilterBackend]
+    filterset_fields = ['name', 'title']
+    filter_backends = [filters.SearchFilter]
+    search_fields = ['name', 'title']
 
 @api_view(['GET'])
 def api_root(request, format=None):

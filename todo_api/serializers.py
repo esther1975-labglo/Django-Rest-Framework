@@ -64,7 +64,6 @@ class RegisterSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = ('id', 'username', 'email', 'password')
-        extra_kwargs = {'password': {'write_only': True}}
         token = serializers.SerializerMethodField('get_user_token')
 
     def create(self, validated_data):
@@ -107,7 +106,7 @@ class LoginSerializer(serializers.Serializer):
 class HyperSnippetSerializer(serializers.HyperlinkedModelSerializer):
     #owner = serializers.ReadOnlyField(source='owner.username')
     highlight = serializers.HyperlinkedIdentityField(view_name='snippet-highlight', many=True, read_only=True, format='html')
-   
+    
     class Meta:
         model = Snippets
         fields = ['url', 'id', 'highlight', 'owner',

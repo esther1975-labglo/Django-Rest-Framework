@@ -1,2 +1,5 @@
 debug.log
 test.py
+/__pycache__
+static/image
+todo_api/__pycache__

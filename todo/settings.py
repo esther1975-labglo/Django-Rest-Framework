@@ -42,7 +42,8 @@ INSTALLED_APPS = [
     'rest_framework',
     'rest_framework.authtoken',
     'knox',
-    'corsheaders'
+    'corsheaders',
+    'django_filters',
     
 ]
 
@@ -89,6 +90,7 @@ WSGI_APPLICATION = 'todo.wsgi.application'
 REST_FRAMEWORK = {
     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
     'PAGE_SIZE': 1,
+     
     'DEFAULT_AUTHENTICATION_CLASSES': 
     
     [
@@ -99,7 +101,8 @@ REST_FRAMEWORK = {
     ],
     'DEFAULT_PERMISSION_CLASSES': [
         'rest_framework.permissions.IsAuthenticated',
-]
+    ],
+    'DEFAULT_FILTER_BACKENDS': ['django_filters.rest_framework.DjangoFilterBackend']
 }
 
 REST_FRAMEWORK = {

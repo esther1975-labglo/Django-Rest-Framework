@@ -12,7 +12,10 @@ from .views import (
     SnippetDetail,
     IsOwnerOrReadOnly,
     SnippetHighlight,
-    TodosList
+    TodosList,
+    filter_todoList,
+    UserListView,
+    ProductList
     #login_api
 
    
@@ -39,9 +42,12 @@ urlpatterns = [
     path('api/login/', LoginAPI.as_view(), name='login'),
     path('login/', views.LoginView.as_view()),
     path('ExampleView', ExampleView.as_view()),
+    path('UserListView', UserListView.as_view()),
     path('api', TodoListApiView.as_view()),
     path('api/<int:todo_id>/', TodoDetailApiView.as_view()),
+    path('filter/', filter_todoList.as_view()),
     path('products', ProductListApiView.as_view()),
+    path('ProductList', ProductList.as_view()),
     path('TodosList', TodosList.as_view()),
     path('product/<int:product_id>/', ProductDetailApiView.as_view()),
     path('SnippetList/<int:pk>/', SnippetList.as_view()),
