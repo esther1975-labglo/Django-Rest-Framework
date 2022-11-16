@@ -1,7 +1,6 @@
-#from django.conf.urls import url
+
 from django.urls import path, include
 from rest_framework import routers
-from . import views
 from todo_api import views
 from .views import (
     ExampleView,
@@ -12,6 +11,8 @@ from .views import (
     SnippetList,
     SnippetDetail,
     IsOwnerOrReadOnly,
+    SnippetHighlight,
+    TodosList
     #login_api
 
    
@@ -24,33 +25,39 @@ from django.urls import path
 
 router = routers.DefaultRouter()
 router.register(r'users', views.UserViewSet)
+router.register(r'userr', views.Hyper_UserViewSet)
 router.register(r'groups', views.GroupViewSet)
+router.register(r'SnippetViewSet', views.SnippetViewSet)
+router.register(r'Hyper_SnippetViewSet', views.Hyper_SnippetViewSet, basename="snippet-highlight")
 
 
-
+'''app_name = todo_api'''
 
 urlpatterns = [
+    #class based views
+    path('register/', RegisterAPI.as_view(), name='register'),
+    path('api/login/', LoginAPI.as_view(), name='login'),
+    path('login/', views.LoginView.as_view()),
     path('ExampleView', ExampleView.as_view()),
     path('api', TodoListApiView.as_view()),
     path('api/<int:todo_id>/', TodoDetailApiView.as_view()),
     path('products', ProductListApiView.as_view()),
+    path('TodosList', TodosList.as_view()),
     path('product/<int:product_id>/', ProductDetailApiView.as_view()),
     path('SnippetList/<int:pk>/', SnippetList.as_view()),
     path('Snippet/<int:pk>/', SnippetDetail.as_view()),
-    path('', include(router.urls)),
-    path('api-auth/', include('rest_framework.urls', namespace='rest_framework')),
-    path('snippet_list', views.snippet_list, name = "snippet_list"),
-    path('snippet_detail/<int:pk>', views.snippet_detail, name = "snippet_detail"),
-    path('IsOwnerOrReadOnly', views.IsOwnerOrReadOnly, name = 'IsOwnerOrReadOnly'),
     path('snippets/<int:pk>/highlight/', views.SnippetHighlight.as_view()),
-    path('register/', RegisterAPI.as_view(), name='register'),
-    path('api/login/', LoginAPI.as_view(), name='login'),
-    path('login/', views.LoginView.as_view()),
     path('api/logout/', knox_views.LogoutView.as_view(), name='logout'),
     path('api/logoutall/', knox_views.LogoutAllView.as_view(), name='logoutall'),
-    
+   
 
-
+    #function based views
+    path('', include(router.urls)),
+    path('snippet_list', views.snippet_list, name = "snippet_list"),
+    path('snippet_detail/<int:pk>', views.snippet_detail, name = "snippet_detail"),
+    path('api_root', views.api_root, name = 'api_root'),
+    path('Hyper_Snippet', views.Hyper_Snippet_list, name = "Snippet_Detail"),
+   
 
 
     

@@ -38,12 +38,22 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'todo_api',
     'rest_framework',
     'rest_framework.authtoken',
-    #'django_rest_auth',
     'knox',
-    'todo_api'
+    'corsheaders'
+    
 ]
+
+CORS_ORIGIN_ALLOW_ALL = True
+
+#CORS_ORIGIN_ALLOW_ALL = False
+
+CORS_ORIGIN_WHITELIST = (
+  'http://localhost:8000',
+  #'http://127.0.0.1:8000/',
+)
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -53,6 +63,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
 ]
 
 ROOT_URLCONF = 'todo.urls'
@@ -104,7 +115,7 @@ REST_FRAMEWORK = {
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'DRF',
+        'NAME': 'django',
         'HOST' : 'localhost',
         'PORT' : '3306',
         'USER' : 'root',
