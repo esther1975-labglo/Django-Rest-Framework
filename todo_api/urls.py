@@ -63,7 +63,8 @@ urlpatterns = [
     path('snippet_detail/<int:pk>', views.snippet_detail, name = "snippet_detail"),
     path('api_root', views.api_root, name = 'api_root'),
     path('Hyper_Snippet', views.Hyper_Snippet_list, name = "Snippet_Detail"),
-   
+    path('simple_html_view', views.simple_html_view, name = "simple_html_view"),
+  
 
 
     

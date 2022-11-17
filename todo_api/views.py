@@ -15,6 +15,7 @@ from django.http import HttpResponse, JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from rest_framework.parsers import JSONParser
 from rest_framework import renderers
+from rest_framework.renderers import AdminRenderer, StaticHTMLRenderer, JSONRenderer
 from rest_framework.decorators import api_view
 from rest_framework.reverse import reverse
 from pygments import highlight
@@ -31,7 +32,7 @@ from knox.models import AuthToken
 from .serializers import UserSerializer, RegisterSerializer
 from rest_framework.authentication import TokenAuthentication
 from todo_api.permissions import IsOwnerOrReadOnly
-from rest_framework.decorators import action
+from rest_framework.decorators import action, renderer_classes
 from rest_framework.pagination import PageNumberPagination
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import filters
@@ -89,10 +90,12 @@ class UserViewSet(viewsets.ModelViewSet):
     permission_classes = [permissions.IsAuthenticated]
 
 class UserListView(generics.ListAPIView):
+    renderer_classes = [AdminRenderer]
     queryset = User.objects.all()
     serializer_class = UserSerializer
     filter_backends = [DjangoFilterBackend]
     search_fields = ['username', 'email']
+    
 
 class Hyper_UserViewSet(viewsets.ModelViewSet):
     queryset = User.objects.all().order_by('-date_joined')
@@ -100,6 +103,7 @@ class Hyper_UserViewSet(viewsets.ModelViewSet):
     permission_classes = [permissions.IsAuthenticated]
 
 class GroupViewSet(viewsets.ModelViewSet):
+    renderer_classes = [JSONRenderer]
     queryset = Group.objects.all()
     serializer_class = GroupSerializer
     permission_classes = [permissions.IsAuthenticated]
@@ -107,6 +111,7 @@ class GroupViewSet(viewsets.ModelViewSet):
 class ExampleView(APIView):
     authentication_classes = [SessionAuthentication, BasicAuthentication]
     permission_classes = [IsAuthenticated]
+    parser_classes = [JSONParser]
 
     def get(self, request, format=None):
         token = Token.objects.get_or_create(user=request.user)
@@ -271,21 +276,6 @@ class SnippetList(mixins.ListModelMixin,
     def delete(self, request, *args, **kwargs):
         return self.destroy(request, *args, **kwargs)
 
-print("**********************************************DOUBT*************************************************************")
-''' HyperlinkedModelSerializer '''
-class Hyper_SnippetViewSet(viewsets.ModelViewSet):
-    queryset = Snippets.objects.all()
-    serializer_class = HyperSnippetSerializer
-    permission_classes = [permissions.IsAuthenticated]
-
-@api_view(['GET'])
-def Hyper_Snippet_list(request):
-    queryset = Snippets.objects.all()
-    serializer = HyperSnippetSerializer(queryset, many=True, context={'request': request})
-    print('oooooooooooooooooooooooooooooooooooo', request)
-    print(serializer.data)
-    return Response(serializer.data)
-print("**********************************************DOUBT*************************************************************")
 
 class SnippetList(generics.ListCreateAPIView):
     queryset = Snippets.objects.all()
@@ -324,6 +314,22 @@ class SnippetViewSet(viewsets.ModelViewSet):
 
     def perform_create(self, serializer):
         serializer.save(owner=self.request.user)
+
+
+''' HyperlinkedModelSerializer '''
+class Hyper_SnippetViewSet(viewsets.ModelViewSet):
+    queryset = Snippets.objects.all()
+    serializer_class = HyperSnippetSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+@api_view(['GET'])
+def Hyper_Snippet_list(request):
+    queryset = Snippets.objects.all()
+    serializer = HyperSnippetSerializer(queryset, many=True, context={'request': request})
+    print('oooooooooooooooooooooooooooooooooooo', request)
+    print(serializer.data)
+    return Response(serializer.data)
+
 
 
 class ProductListApiView(APIView):
@@ -412,8 +418,12 @@ def api_root(request, format=None):
     })
 
 
-
-
+@api_view(['GET'])
+@renderer_classes([StaticHTMLRenderer])
+def simple_html_view(request):
+    data = '<html><body><h1>Hiiiiiiii</h1></body></html>'
+    return Response(data)
+    
 
       
 

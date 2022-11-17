@@ -18,9 +18,16 @@ class ProductSerializer(serializers.ModelSerializer):
 
 
 class UserSerializer(serializers.ModelSerializer):
+   
     class Meta:
         model = User
         fields = ('url', 'id', 'username', 'email')
+
+class GroupSerializer(serializers.HyperlinkedModelSerializer):
+    class Meta:
+        model = Group
+        fields = ['url', 'name']
+
 
 class Hyper_UserSerializer(serializers.HyperlinkedModelSerializer):
     
@@ -28,12 +35,14 @@ class Hyper_UserSerializer(serializers.HyperlinkedModelSerializer):
         model = User
         fields = ['url', 'username', 'email', 'groups']
 
-
-class GroupSerializer(serializers.HyperlinkedModelSerializer):
+class HyperSnippetSerializer(serializers.HyperlinkedModelSerializer):
+    #owner = serializers.ReadOnlyField(source='owner.username')
+    highlight = serializers.HyperlinkedIdentityField(view_name='snippet-highlight', many=True, read_only=True, format='html')
+    
     class Meta:
-        model = Group
-        fields = ['url', 'name']
-
+        model = Snippets
+        fields = ['url', 'id', 'highlight', 'owner',
+                  'title', 'code', 'linenos',  'language', 'style']
 
 class SnippetSerializer(serializers.Serializer):
     id = serializers.IntegerField(read_only=True)
